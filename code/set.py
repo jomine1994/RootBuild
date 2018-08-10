@@ -17,7 +17,37 @@ def load_set(path):
 	spec=float(lines[8].strip())
 	detail=float(lines[9].strip())
 	results_dir=lines[10].strip()
+	
+	#Get names of images. Remove any non-image files.
+	imnames=[]
+	files=os.listdir(dname)
+	for file in files:
+    	imnames.append(file)
 
-load_set('set.txt')
+Results={};
+Results{1,2}='Whole Root Area';
+Results{1,3}='Whole Root Eccentricity';
+Results{1,4}='Number of Cortex Cells';
+Results{1,5}='Average Area of Cortex Cells';
+Results{1,6}='Average Eccenctricity of Cortex Cells';
+Results{1,7}='Stele Area';
+Results{1,8}='Stele Eccentricity';
+Results{1,9}='Number of Stele Cells';
+Results{1,10}='Average Area of Stele Cells';
+Results{1,11}='Average Eccentricity of Stele Cells';
+Results{1,12}='Number of Metaxylem Cells';
+Results{1,13}='Average Area of Metaxylem Cells';
+Results{1,14}='Eccentricity of Metaxylem Cells';
+Results{1,15}='Number of Endodermis Cells';
+Results{1,16}='Average Area of Endodermis Cells';
+Results{1,17}='Eccentricity of Endodermis Cells';
+if spec==2
+    Results{1,18}='Number of Protoxylem Cells';
+    Results{1,19}='Average Area of Protoxylem Cells';
+    Results{1,20}='Average Eccentricity of Protoxylem Cells';
+    Results{1,21}='Number of Aerenchyma Cells';
+    Results{1,22}='Average Area of Aerenchyma Cells';
+    Results{1,23}='Average Eccentricity of Aerenchyma Cells';
+end
 
 

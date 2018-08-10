@@ -1,0 +1,11 @@
+D:\RootAnalyzer_source\maize_image\
+25
+0.05
+100
+2
+50
+25
+10
+2
+2
+D:\RootAnalyzer_source\maize_result\

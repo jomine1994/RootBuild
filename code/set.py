@@ -1,6 +1,14 @@
 import sys
 import os
-
+from tqdm import tqdm
+from skimage import io
+from skimage.measure import label
+from skimage.color import rgb2gray
+import cv2
+import PIL.Image
+import numpy as np
+sys.path.append('D:\\RootAnalyzer_source\\RootAnalyzer_source')
+from seg_and_det import seg_and_det
 
 
 def load_set(path):
@@ -22,32 +30,54 @@ def load_set(path):
 	imnames=[]
 	files=os.listdir(dname)
 	for file in files:
-    	imnames.append(file)
+		imnames.append(file)
 
-Results={};
-Results{1,2}='Whole Root Area';
-Results{1,3}='Whole Root Eccentricity';
-Results{1,4}='Number of Cortex Cells';
-Results{1,5}='Average Area of Cortex Cells';
-Results{1,6}='Average Eccenctricity of Cortex Cells';
-Results{1,7}='Stele Area';
-Results{1,8}='Stele Eccentricity';
-Results{1,9}='Number of Stele Cells';
-Results{1,10}='Average Area of Stele Cells';
-Results{1,11}='Average Eccentricity of Stele Cells';
-Results{1,12}='Number of Metaxylem Cells';
-Results{1,13}='Average Area of Metaxylem Cells';
-Results{1,14}='Eccentricity of Metaxylem Cells';
-Results{1,15}='Number of Endodermis Cells';
-Results{1,16}='Average Area of Endodermis Cells';
-Results{1,17}='Eccentricity of Endodermis Cells';
-if spec==2
-    Results{1,18}='Number of Protoxylem Cells';
-    Results{1,19}='Average Area of Protoxylem Cells';
-    Results{1,20}='Average Eccentricity of Protoxylem Cells';
-    Results{1,21}='Number of Aerenchyma Cells';
-    Results{1,22}='Average Area of Aerenchyma Cells';
-    Results{1,23}='Average Eccentricity of Aerenchyma Cells';
-end
+	Results=[];
+	Results.append('Whole Root Area')
+	Results.append('Whole Root Eccentricity')
+	Results.append('Number of Cortex Cells')
+	Results.append('Average Area of Cortex Cells')
+	Results.append('Average Eccenctricity of Cortex Cells')
+	Results.append('Stele Area')
+	Results.append('Stele Eccentricity')
+	Results.append('Number of Stele Cells')
+	Results.append('Average Area of Stele Cells')
+	Results.append('Average Eccentricity of Stele Cells')
+	Results.append('Number of Metaxylem Cells')
+	Results.append('Average Area of Metaxylem Cells')
+	Results.append('Eccentricity of Metaxylem Cells')
+	Results.append('Number of Endodermis Cells')
+	Results.append('Average Area of Endodermis Cells')
+	Results.append('Eccentricity of Endodermis Cells')
+	if spec==2:
+		Results.append('Number of Protoxylem Cells')
+		Results.append('Average Area of Protoxylem Cells')
+		Results.append('Average Eccentricity of Protoxylem Cells')
+		Results.append('Number of Aerenchyma Cells')
+		Results.append('Average Area of Aerenchyma Cells')
+		Results.append('Average Eccentricity of Aerenchyma Cells')
+	for file in tqdm(imnames):
+			I=io.imread(dname+file,as_gray=True);
+			filename=file.split('.')[0]
+			coord,x,y,A,xb,yb,BW=seg_and_det(I,W,Di,small,results_dir,filename,detail)
+			coord,x,y,A= remove_interior_cell(coord,x,y,A,I,BW)
+			endo_x,endo_y,endo_A,x,y,A = add_epidermis(x,y,A,xb,yb)
+			small_x,small_y,small_A,big_x,big_y,big_A,num_big,num_small=size_classify_cells(x,y,A,big,small)
+    
+    if detail==2
+        figure
+        imshow(I)
+        hold on
+        for i=1:numel(small_x)
+            plot(small_x{i},small_y{i},'r','LineWidth',2)
+        end
+        saveas(gcf,[results_dir,filename,'\size.jpg'])
+        close(gcf)
+        drawnow; pause(0.05);
+    end
+
+
+
+load_set('set.txt')
 
 

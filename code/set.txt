@@ -1,4 +1,4 @@
-D:\RootAnalyzer_source\maize_image\
+D:\RootAnalyzer_source\RootAnalyzer_source\maize_image\
 25
 0.05
 100
@@ -8,4 +8,4 @@ D:\RootAnalyzer_source\maize_image\
 10
 2
 2
-D:\RootAnalyzer_source\maize_result\
+D:\RootAnalyzer_source\RootAnalyzer_source\maize_result\

@@ -60,21 +60,23 @@ def load_set(path):
 			I=io.imread(dname+file,as_gray=True);
 			filename=file.split('.')[0]
 			coord,x,y,A,xb,yb,BW=seg_and_det(I,W,Di,small,results_dir,filename,detail)
-			coord,x,y,A= remove_interior_cell(coord,x,y,A,I,BW)
+			'''coord,x,y,A= remove_interior_cell(coord,x,y,A,I,BW)
 			endo_x,endo_y,endo_A,x,y,A = add_epidermis(x,y,A,xb,yb)
 			small_x,small_y,small_A,big_x,big_y,big_A,num_big,num_small=size_classify_cells(x,y,A,big,small)
-    
-    if detail==2
-        figure
-        imshow(I)
-        hold on
-        for i=1:numel(small_x)
-            plot(small_x{i},small_y{i},'r','LineWidth',2)
-        end
-        saveas(gcf,[results_dir,filename,'\size.jpg'])
-        close(gcf)
-        drawnow; pause(0.05);
-    end
+    		center, phi, axes = fit_ellipse(big_x[0],big_y[0])
+    		dists,X0,Y0,bs_x,bs_y,meanz2 = dist2cent(num_small,small_x,small_y,big_x,big_y)
+    		num_close,close_x,close_y,close_A,all_close_x, all_close_y=find_near(dists,small_x,small_y)
+    		stele_A,ellip,stele_x,stele_y,all_stele_x,all_stele_y,close_x,close_y,close_A = NN(close_x,close_y,close_A,NNd,detail,I,results_dir,filename)
+   			meta,_,_=find_meta(num_big,big_x,big_y,ellip,stele_A)
+    		if spec==1:
+        		Xc,Yc,keep_meta= remove_meta2(meta,big_x,big_y,bs_x,meanz2,close_A)
+    		elif spec==2:
+        		Xc,Yc,keep_meta= remove_meta3(meta,big_x,big_y,bs_x,meanz2,close_A);
+    		stele_x,stele_y,num_stele,stele_A,big_x,big_y,big_A=metaxylem_noise(meta,keep_meta,len(stele_x), stele_x,stele_y,big_x,big_y,big_A,stele_A,all_stele_x,all_stele_y)
+    		Kx,Ky,last_ellip,all_stele_x,all_stele_y,stele_x,stele_y,stele_A,remove_inds,cent_stele,D_stele,close_ecc,close_x,close_y,close_A = collect_small_stele(all_stele_x,all_stele_y,numel(close_x),close_x,close_y,close_A,stele_x,stele_y,stele_A,Xc,Yc,distp)
+    		big_x,big_y,big_A,stele_x,stele_y,stele_A,all_stele_x,all_stele_y,ecc_big,keep_meta = collect_big_stele(big_x,big_y,big_A,stele_x,stele_y,stele_A,all_stele_x,all_stele_y,Kx,Ky,keep_meta,distp2)
+    		big_x,big_y,big_A,stele_x,stele_y,stele_A,num_stele,num_big,keep_meta,ecc_big,Kx,Ky,ecc,keep_meta_A,tr = remove_stele(stele_x,stele_y,stele_A,big_x,big_y,big_A,close_x,close_y,Kx,Ky,keep_meta,big)
+			'''
 
 
 

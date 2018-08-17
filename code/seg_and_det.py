@@ -5,6 +5,7 @@ from skimage.filters import threshold_otsu, threshold_local
 from skimage import measure,color
 from skimage.measure import label
 from skimage.morphology import dilation,disk
+from skimage.feature import peak_local_max
 import scipy.signal as signal
 from scipy.interpolate import interp1d
 from scipy.interpolate import griddata
@@ -73,6 +74,7 @@ def seg_and_det(I,W,Di,small,results_dir,filename,detail):
     
 
     ##################################### Get coordinates and area of connected components 
+    #Get connected components and remove components whose area is less than small
     conn,num=label(BW,connectivity=2,return_num=True)
     props=measure.regionprops(conn)
     listing=[]
@@ -85,7 +87,9 @@ def seg_and_det(I,W,Di,small,results_dir,filename,detail):
             x=listing[i][j][0]
             y=listing[i][j][1]
             BW[x][y]=0
-    
+
+
+    #Get coordinates of contour lines of each component 
     BW=dilation(BW,selem=np.ones((2,2)))
     contours=plt.contour(double(BW), levels=[0.0,0.0])
     lines = []
@@ -104,7 +108,9 @@ def seg_and_det(I,W,Di,small,results_dir,filename,detail):
             X.append(np.array(lines[i][:,0]))
             Y.append(np.array(lines[i][:,1]))
             coord.append(np.array(lines[i]))
-    max_area=max(A)
+
+    # remove contours outside the root
+    #max_area=max(A)
     ind=A.index(max(A))
     p=path.Path(coord[ind])
     to_del=[]
@@ -121,6 +127,7 @@ def seg_and_det(I,W,Di,small,results_dir,filename,detail):
     ########################################### Gain approximation of entire root boundary
     ind=A.index(max(A))
     mask=poly2mask(X[ind],Y[ind], I.shape)
+    mask=gaussian_filter(mask,3)
     for i in range(width):
         for j in range(height):
             if mask[i][j]:
@@ -142,34 +149,36 @@ def seg_and_det(I,W,Di,small,results_dir,filename,detail):
         A_b.append(area)
         X_b.append(np.array(lines[i][:,0]))
         Y_b.append(np.array(lines[i][:,1]))
-    max_area=max(A_b)
+    #max_area=max(A_b)
     ind=A_b.index(max(A_b))
     xb=X_b[ind]
     yb=Y_b[ind]
-    print(xb)
-    print(yb)
 
     ############################################ Add missed cortex cells
-    '''BW_orig=BW
-    D_orig=distance_transform_edt(BW_orig)
+    BW_orig=BW
     BW=gaussian_filter(BW,3)
+    D_orig=distance_transform_edt(BW_orig)
     D=distance_transform_edt(BW)
-    regmax= maximum_filter(D,size=3)
-    ii=np.where(regmax==1)[0]
-    jj=np.where(regmax==1)[1]
-    ij=np.where(regmax==1)
-    print(ii.shape)
-    ij=np.asarray(ij)
-    ij=ij.transpose()
+    
+    #regmax= maximum_filter(D,size=3)
+    #ii=np.where(regmax==1)[0]
+    #jj=np.where(regmax==1)[1]
+    #ij=np.where(regmax==1)
+    #print(ii.shape)
+    ij=peak_local_max(D,3)
+    ii=ij[:, 0]
+    jj=ij[:, 1]
+    #ij=np.asarray(ij)
+    #ij=ij.transpose()
+    
     IN=[]
     for i in range(len(coord)):
         P=path.Path(coord[i])
         re=p.contains_points(ij)
         IN.append(re)
-    IN=np.asarray(IN)
-    print(IN.shape)
-    minpeakheight=15;
-    to_remove=[];
+
+    minpeakheight=15
+    to_remove=[]
     for i in range(len(ii)):
         if True in IN[:,i]:
             to_remove.append(i)
@@ -251,7 +260,7 @@ def seg_and_det(I,W,Di,small,results_dir,filename,detail):
     X_all=np.concatenate(X,X2)
     Y_all=np.concatenate(Y,Y2)
     coord_all=np.concatenate(coord,coord2)
-    A_all=np.concatenate(A,A2)'''
+    A_all=np.concatenate(A,A2)
     return coord,X,Y,A,xb,yb,BW
 
 
